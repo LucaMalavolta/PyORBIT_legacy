@@ -2,7 +2,6 @@ from classes.model_container import ModelContainer
 from classes.input_parser import yaml_parser
 import numpy as np
 import emcee
-from pyde.de import DiffEvol
 import h5py
 import cPickle as pickle
 import os
@@ -76,53 +75,12 @@ if mc.emcee_parameters['nwalkers']%2 == 1: mc.emcee_parameters['nwalkers'] += 1
 
 print 'Nwalkers = ', mc.emcee_parameters['nwalkers']
 
-if mc.starting_point_flag:
-    mc.create_starting_point()
-    starting_point = mc.starting_point
-    population = np.zeros([mc.emcee_parameters['nwalkers'], mc.ndim], dtype=np.double)
-    for ii in xrange(0, mc.emcee_parameters['nwalkers']):
-        population[ii, :] = np.random.normal(starting_point, 0.0000001)
+mc.create_starting_point()
+starting_point = mc.starting_point
+population = np.zeros([mc.emcee_parameters['nwalkers'], mc.ndim], dtype=np.double)
+for ii in xrange(0, mc.emcee_parameters['nwalkers']):
+    population[ii, :] = np.random.normal(starting_point, 0.0000001)
 
-else:
-    if not os.path.exists(pyde_dir_output):
-        os.makedirs(pyde_dir_output)
-
-    if os.path.isfile(pyde_dir_output + 'pyde_pops.pick'):
-        print os.path.isfile(pyde_dir_output + 'pyde_pops.pick')
-        population = pickle.load(open(pyde_dir_output + 'pyde_pops.pick', 'rb'))
-        starting_point = np.median(population, axis=0)
-        mc.recenter_bounds(starting_point, population)
-
-    else:
-        print 'PyDE'
-        de = DiffEvol(mc, mc.bounds, mc.emcee_parameters['nwalkers'], maximize=True)
-        de.optimize(mc.pyde_parameters['ngen'])
-        print 'PyDE completed'
-
-        population = de.population
-        starting_point = np.median(population, axis=0)
-        pickle.dump(starting_point, open(pyde_dir_output + 'pyde_mean.pick', 'wb'))
-
-        #np.savetxt(pyde_dir_output + 'pyDEout_original_bounds.dat', mc.bounds)
-        #np.savetxt(pyde_dir_output + 'pyDEout_original_pops.dat', population)
-
-        # bounds redefinition and fix for PyDE anomalous results
-        if mc.recenter_bounds_flag:
-            pickle.dump(mc.bounds, open(pyde_dir_output + 'bounds_orig.pick', 'wb'))
-            pickle.dump(population, open(pyde_dir_output + 'pyde_pops_orig.pick', 'wb'))
-            mc.recenter_bounds(starting_point, population)
-            pickle.dump(mc.bounds, open(pyde_dir_output + 'bounds.pick', 'wb'))
-            pickle.dump(population, open(pyde_dir_output + 'pyde_pops.pick', 'wb'))
-
-            #np.savetxt(pyde_dir_output + 'pyDEout_redefined_bounds.dat', mc.bounds)
-            #np.savetxt(pyde_dir_output + 'pyDEout_redefined_pops.dat', de.population)
-            print 'REDEFINED BOUNDS'
-
-        else:
-            pickle.dump(mc.bounds, open(pyde_dir_output + 'bounds.pick', 'wb'))
-            pickle.dump(population, open(pyde_dir_output + 'pyde_pops.pick', 'wb'))
-
-print 'PyDE completed'
 mc.results_resumen(starting_point)
 
     #json.dump(mc.variable_list, open('output/' + mc.planet_name + '_vlist.json', 'wb'))
@@ -172,4 +130,3 @@ else:
     save_to_hdf5(mc.emcee_parameters['nsteps'])
 
 print 'emcee completed'
-
