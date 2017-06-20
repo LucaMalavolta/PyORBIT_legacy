@@ -14,8 +14,7 @@ import sys
 mpl.use('Agg')
 from matplotlib import pyplot as plt
 import corner
-sys.path.append('/Users/malavolta/Astro/CODE/trades/pytrades')
-import constants
+from classes import constants
 
 #Plot improvements
 plt.rc('font',**{'family':'serif','serif':['Computer Modern Roman']})
@@ -76,7 +75,6 @@ AUday2ms = AU_km / seconds_in_day * 1000.0
 
 parser = argparse.ArgumentParser(prog='PyORBIT_V3_GetResults.py', description='Extract results from output MCMC')
 # parser.add_argument('-l', type=str, nargs='+', help='line identificator')
-parser.add_argument('sample', type=str, nargs=1, help='sample (emcee or polychord)')
 parser.add_argument('config_file', type=str, nargs=1, help='config file')
 parser.add_argument('-p', type=str, nargs='?', default='False', help='Create plot files')
 parser.add_argument('-mp', type=str, nargs='?', default='False', help='Create MEGA plot')
@@ -88,7 +86,7 @@ parser.add_argument('-forecast', type=float, nargs='?', default=None, help='Crea
 
 args = parser.parse_args()
 
-sampler = args.sample[0]
+sampler = 'emcee'
 file_conf = args.config_file[0]
 
 sample_keyword = {

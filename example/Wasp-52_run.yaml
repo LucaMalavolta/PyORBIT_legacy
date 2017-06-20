@@ -1,0 +1,32 @@
+Name: Wasp-52
+Output: Wasp-52_run
+Inputs:
+  0:
+      File: Wasp-52_RVs_Coralie_HR.dat
+      Kind: RV
+      Models: ['kepler']
+  1:
+      File: Wasp-52_RVs_Sophie_HE.dat
+      Kind: RV
+      Models: ['kepler']
+  2:
+      File: Wasp-52_RVs_Sophie_HR.dat
+      Kind: RV
+      Models: ['kepler']
+Planets:
+  0:
+    Orbit: keplerian
+    Boundaries:
+      P: [1.00, 3.00]
+      K: [0.50, 300.00]
+      e: [0.00, 1.000]
+    Priors:
+      P: ['Gaussian',1.7498, 0.0001]
+    Inclination: [90, 0.1]
+emcee:
+  Nsteps: 4000
+  Nburn:   2000
+  Npop_mult: 2
+  Thin: 1
+  Recenter_Bounds: True
+Star_Mass: [0.87, 0.03]
